@@ -57,11 +57,16 @@ for ii = 1:numUsers
   avgRating = rating./hits;
   for jj = 1:tracksPerUser
     if hits(jj) == 0
-      avgRating(jj) = 0;
+      avgRating(jj) = 50;
     end
   end
-  % Account for number of hits to skew the rankings slightly
-  avgRating = avgRating + (1e-3)*hits;
+  % Account for number of hits to skew the rankings slightly 
+  % More hits skews positive ratings up and negative ratings down
+  if avgRating > 50
+    avgRating = avgRating + (1e-3)*hits;
+  else
+    avgRating = avgRating - (1e-3)*hits;
+  end
   ranks = tiedrank(avgRating);
   for jj = 1:tracksPerUser
     testTrack = testSet(ii, jj+1);
