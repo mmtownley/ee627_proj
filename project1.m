@@ -12,13 +12,15 @@ outputFile = 'submission.csv';
 %numUsers = 10;
 numUsers = 20000;
 tracksPerUser = 6;
+hits = zeros(numUsers,tracksPerUser);
+rating = zeros(numUsers,tracksPerUser);
+avgRating = zeros(numUsers,tracksPerUser);
 wrOut = cell(tracksPerUser*numUsers+1,2);
 wrOut(1,1:2) = {'TrackID', 'Predictor'};
 % Rules based recommendation approach
 for ii = 1:numUsers
   testUser = testSet(ii, 1);
-  hits = zeros(1,tracksPerUser);
-  rating = zeros(1,tracksPerUser);
+  
   for jj = 1:tracksPerUser
     testTrack = testSet(ii, jj+1);
     % Look up the user's rating of the track's associated album, artist,
@@ -46,28 +48,30 @@ for ii = 1:numUsers
         searchRows = find(trainData(:,1) == searchData(1));
         for search = 1:length(searchRows)
           if trainData(searchRows(search),2) == searchData(2)
-            hits(jj) = hits(jj) + 1;
-      	    rating(jj) = rating(jj) + trainData(searchRows(search),3);
+            hits(ii,jj) = hits(ii,jj) + 1;
+      	    rating(ii,jj) = rating(ii,jj) + trainData(searchRows(search),3);
           end
         end
       end
     end
   end
   % Rank by the average rating
-  avgRating = rating./hits;
+  avgRating(ii,:) = rating(ii,:)./hits(ii,:);
   for jj = 1:tracksPerUser
-    if hits(jj) == 0
-      avgRating(jj) = 50;
+    if hits(ii,jj) == 0
+      avgRating(ii,jj) = 50;
+      %avgRating(ii,jj) = 25;
+    end
+    % Account for number of hits to skew the rankings slightly 
+    % More hits skews positive ratings up and negative ratings down
+    if avgRating(ii,jj) > 50
+      avgRating(ii,jj) = avgRating(ii,jj) + (1e-3)*hits(ii,jj);
+    else
+      avgRating(ii,jj) = avgRating(ii,jj) - (1e-3)*hits(ii,jj);
     end
   end
-  % Account for number of hits to skew the rankings slightly 
-  % More hits skews positive ratings up and negative ratings down
-  if avgRating > 50
-    avgRating = avgRating + (1e-3)*hits;
-  else
-    avgRating = avgRating - (1e-3)*hits;
-  end
-  ranks = tiedrank(avgRating);
+  
+  ranks = tiedrank(avgRating(ii,:));
   for jj = 1:tracksPerUser
     testTrack = testSet(ii, jj+1);
     outRow = (ii-1)*tracksPerUser+jj;
