@@ -59,8 +59,8 @@ for ii = 1:numUsers
   avgRating(ii,:) = rating(ii,:)./hits(ii,:);
   for jj = 1:tracksPerUser
     if hits(ii,jj) == 0
-      avgRating(ii,jj) = 50;
-      %avgRating(ii,jj) = 25;
+      %avgRating(ii,jj) = 50;
+      avgRating(ii,jj) = 25;
     end
     % Account for number of hits to skew the rankings slightly 
     % More hits skews positive ratings up and negative ratings down
