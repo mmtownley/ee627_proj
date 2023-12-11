@@ -127,11 +127,11 @@ for ii = 1:numUsers
     trackScore(ii,jj) = trackScore(ii,jj) + 0.01*genreStat3(ii,jj);
     % Penalize a high variance
     if ~isnan(genreStat6(ii,jj))
-      trackScore(ii,jj) = trackScore(ii,jj) - 0.02*genreStat6(ii,jj);
+      trackScore(ii,jj) = trackScore(ii,jj) - 0.04*genreStat6(ii,jj);
     end
-    % # hits is a confidence, take distance btwn 50 and avg, and multiply by # hits
+    % # hits is a confidence, take distance btwn 70 and avg, and multiply by # hits
     if ~isnan(genreStat5(ii,jj))
-      trackScore(ii,jj) = trackScore(ii,jj) + 0.03*genreStat1(ii,jj)*(genreStat5(ii,jj) - 50);
+      trackScore(ii,jj) = trackScore(ii,jj) + 0.03*genreStat1(ii,jj)*(genreStat5(ii,jj) - 70);
     end
   end
   
